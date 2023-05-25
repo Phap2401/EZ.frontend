@@ -23,7 +23,6 @@ export default class ApiClient {
     if (typeof query === 'string') {
       requestUrl = `${url}${query}`;
     }
-    console.log('domainUrl', domainUrl);
     const response = await axios.get(domainUrl + requestUrl, {
       params,
       headers: await this.getHeaders(),
