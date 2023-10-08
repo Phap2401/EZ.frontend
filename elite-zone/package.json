@@ -13,15 +13,17 @@
     "prettier:fix": "prettier --write \"src/**/(*.tsx|*.ts|*.css|*.scss)\""
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.1.0",
     "@types/axios": "^0.14.0",
+    "@types/qs": "^6.9.7",
     "@types/react-redux": "^7.1.25",
     "@types/redux-saga": "^0.10.5",
+    "@types/yup": "^0.32.0",
     "antd": "^5.5.1",
     "axios": "^1.4.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "next": "^13.4.3",
-    "@types/qs": "^6.9.7",
     "node": "^20.2.0",
     "qs": "^6.11.2",
     "react": "^18.2.0",
@@ -32,7 +34,7 @@
     "redux": "^4.2.1",
     "redux-saga": "^1.2.3",
     "reselect": "^4.1.8",
-    "yup": "^1.1.1"
+    "yup": "^1.2.0"
   },
   "devDependencies": {
     "@types/node": "^20.2.3",
@@ -40,12 +42,13 @@
     "@types/react-dom": "^18.0.11",
     "@types/redux-logger": "^3.0.9",
     "@typescript-eslint/eslint-plugin": "^5.59.7",
-    "@typescript-eslint/parser": "^5.59.7",
+    "@typescript-eslint/parser": "^5.59.9",
     "@vitejs/plugin-react-swc": "^3.0.0",
     "eslint": "^8.41.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-import-resolver-typescript": "^3.5.5",
     "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-jest": "^27.2.1",
     "eslint-plugin-jsx-a11y": "^6.7.1",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.32.2",
