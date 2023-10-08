@@ -74,7 +74,7 @@ export default class ApiClient {
     if (isCountExpiredAPITime > timeClear) {
       return `Bearer ${accessToken}`
     } else {
-      // await logOut();// function logout user
+      //await logOut();// function logout user
       return ''
     }
   }
