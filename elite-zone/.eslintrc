@@ -10,11 +10,18 @@
     "project": "./tsconfig.json"
   },
   "extends": [
-    "plugin:react/recommended",
+    "typescript",
+    "typescript/react",
+    "typescript/prettier",
+    "typescript/prettier-react",
+    "airbnb-typescript",
+    "airbnb/hooks",
     "plugin:@typescript-eslint/recommended",
-    "plugin:react-hooks/recommended",
+    "plugin:jest/recommended",
+    "prettier",
     "plugin:prettier/recommended",
-    "eslint:recommended"
+    "plugin:import/recommended",
+    "eslint-config-prettier"
   ],
   "plugins": ["react", "react-hooks", "@typescript-eslint", "jest"],
   "env": {
