@@ -52,17 +52,20 @@
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
-Describe your project in more detail here, including its purpose, features, and any screenshots or links to relevant visuals.
+The Elite Zone Project is a web application with the following features:
+
+- Built with React, Redux, and Material-UI.
+- Describe more project features here.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Built With
 
-Below is the list of frameworks/libraries used in the project
+The project is built using the following technologies:
 
-- ReactTs
-- Redux
-- MUI
+- [React](https://reactjs.org/)
+- [Redux](https://redux.js.org/)
+- [Material-UI](https://mui.com/)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -70,11 +73,11 @@ Below is the list of frameworks/libraries used in the project
 
 ## Getting Started
 
-Follow these steps to run the source code.
+Follow these steps to run the project's source code.
 
 ### Prerequisites
 
-List the required versions of Node and npm:
+Make sure you have the following versions of Node.js and npm installed:
 
 ```sh
 node -v
@@ -113,7 +116,7 @@ npm -v
    ```
 
 This command will install all the required packages specified in the package.json file.
-6. Run the server
+4. Run the server
 
    ```sh
    npm run dev
