@@ -1,12 +1,6 @@
-import { combineReducers } from '@reduxjs/toolkit';
-import app from './app/reducer';
-import auth from './auth/reducer';
-import survey from './survey/reducer';
+import { combineReducers } from '@reduxjs/toolkit'
 
-export const rootReducer = (injectedReducers = {}) => {
+export const rootReducer = () => {
   return combineReducers({
-    app,
-    auth,
-    survey,
-  });
-};
+  })
+}
