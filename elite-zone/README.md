@@ -63,9 +63,9 @@ The Elite Zone Project is a web application with the following features:
 
 The project is built using the following technologies:
 
-- [React](https://reactjs.org/) ![React Logo](public/images/react-logo.png)
-- [Redux](https://redux.js.org/) ![Redux Logo](public/images/redux-logo.png)
-- [Material-UI](https://mui.com/) ![Material-UI Logo](public/images/material-ui-logo.png)
+- [React](https://reactjs.org/)
+- [Redux](https://redux.js.org/)
+- [Material-UI](https://mui.com/)
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- GETTING STARTED -->
