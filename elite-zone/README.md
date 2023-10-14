@@ -14,7 +14,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/Phap2401/EZ.frontend">
-    <img src="public/images/Logo/LogoHome.png" alt="Logo" width="80" height="80">
+    <img src="./src/assets/LogoHome.png" alt="Logo" width="80" height="80">
   </a>
 
   <h3 align="center">Elite Zone Project</h3>
@@ -82,7 +82,7 @@ Make sure you have the following versions of Node.js and npm installed:
 node -v
 ```
 
-v18.18.0
+v18.16.0
 
 ```sh
 npm -v
@@ -99,7 +99,7 @@ npm -v
    ```
 
    ```sh
-   cd EZ.frontend
+   cd EZ.frontend/elite-zone
    ```
 
 2. Pull latest code
@@ -115,6 +115,7 @@ npm -v
    ```
 
 This command will install all the required packages specified in the package.json file.
+
 4. Run the server
 
    ```sh
@@ -150,7 +151,9 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 <!-- CONTACT -->
 
 ## Contact
+
 Nguyen Thanh Phap - thanhphap2401@gmail.com
+
 Phan Anh Tuan - tuanp6905@gmail.com
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
