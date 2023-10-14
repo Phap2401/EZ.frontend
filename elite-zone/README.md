@@ -79,16 +79,16 @@ Follow these steps to run the project's source code.
 Make sure you have the following versions of Node.js and npm installed:
 
 ```sh
-    node -v
+node -v
 ```
 
-    v18.16.0
+v18.16.0
 
 ```sh
-    npm -v
+npm -v
 ```
 
-    9.8.1
+9.8.1
 
 ### Installation
 
