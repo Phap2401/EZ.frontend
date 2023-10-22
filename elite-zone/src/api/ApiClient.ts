@@ -1,46 +1,83 @@
 import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
-
 import { stringify } from 'qs';
 import moment from 'moment';
-import { decodeJwt } from '~/utils/helperFunctions';
+import { decodeJwt, Logout } from '~/utils/helperFunctions';
 
-const domainUrl = `${import.meta.env.VITE_REACT_APP_API_HOST}/api`;
+// Create an Axios instance with a default base URL
+const api = axios.create({
+  baseURL: `${import.meta.env.VITE_REACT_APP_API_HOST}/api`,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
-export type QueryObject = { [key: string]: string | number | boolean | null };
-
-export default class ApiClient {
-  /**
-   *
-   * @param url
-   * @param params
-   */
-  static async get(
-    url: string,
-    params: object,
-    query?: undefined | { [key: string]: string | boolean | null } | string
-  ): Promise<AxiosResponse> {
-    let requestUrl = query ? `${url}?${stringify(query)}` : url;
-    if (typeof query === 'string') {
-      requestUrl = `${url}${query}`;
+// Add a request interceptor
+api.interceptors.request.use(
+  (config) => {
+    const token = ApiClient.getToken();
+    if (token) {
+      config.headers.authorization = token;
     }
-    const response = await axios.get(domainUrl + requestUrl, {
-      params,
-      headers: await this.getHeaders(),
-      data: {},
-    });
-    return response;
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
+);
 
-  static async getNoHeader(
+// Add a response interceptor to handle 401 errors
+api.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      Logout();
+    }
+    return Promise.reject(error);
+  }
+);
+
+export type QueryObject =
+  | string
+  | null
+  | undefined
+  | { [key: string]: string | number | boolean | null };
+
+const ApiClient = {
+  getToken: function () {
+    const timeNow = moment();
+    //get Token from localStorage
+    // const accessToken = localStorage.getItem('token');
+    const accessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIwMDAxIiwidXNlck5hbWUiOiJBbmggVHXhuqVuIDEiLCJwaG9uZSI6IjA4MjYxNjgxNzgiLCJlbWFpbCI6InR1YW5wNjkwNUBnbWFpbC5jb20iLCJyb2xlIjp7fSwiaWF0IjoxNjk3OTY0Mjg5LCJleHAiOjE2OTc5Njc4ODl9.fgCH7hPapBubH78Wwff7hb2pA5S-d2Jwx5OfrDNXPuY'
+    if (!accessToken) {
+      Logout(); // function to log out the user
+      return '';
+    }
+    //access token get from API login
+    const expiredTokenAPI = decodeJwt(accessToken)?.exp;
+    const isTokenExpired = moment.unix(expiredTokenAPI ?? 0).isBefore(timeNow);
+    if (!isTokenExpired) {
+      return `Bearer ${accessToken}`;
+    } else {
+      Logout(); // function to log out the user
+      return '';
+    }
+  },
+  convertQuery: function (url: string, query: QueryObject) {
+    if (!query) return url;
+    if (typeof query === 'string') return `${url}?${query}`;
+    if (typeof query === 'object' && Object.keys(query).length === 0)
+      return `${url}?${stringify(query)}`;
+    return url;
+  },
+  getNoHeader: async function (
     url: string,
     params: object,
-    query?: undefined | { [key: string]: string | boolean | null } | string
+    query?: QueryObject
   ): Promise<AxiosResponse> {
-    let requestUrl = query ? `${url}?${stringify(query)}` : url;
-    if (typeof query === 'string') {
-      requestUrl = `${url}${query}`;
-    }
-    const response = await axios.get(domainUrl + requestUrl, {
+    const requestUrl = this.convertQuery(url, query);
+    const response = await api.get(requestUrl, {
       params,
       headers: {
         'Content-Type': 'application/json',
@@ -48,44 +85,19 @@ export default class ApiClient {
       data: {},
     });
     return response;
-  }
-
-  static async getHeaders(contentType = 'application/x-www-form-urlencoded') {
+  },
+  getHeaders: async function (contentType = 'application/x-www-form-urlencoded') {
     return {
       'Content-Type': contentType,
       authorization: await this.getToken(),
     };
-  }
-
-  private static async getToken() {
-    const timeClear = 5; // as minutes
-    const timeNow = moment();
-    //get Token from user info
-    const accessToken =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
-    if (!accessToken) {
-      // await logOut();// function logout user
-      return '';
-    }
-    //access token get from API login
-    const expiredTokenAPI = decodeJwt(accessToken)?.exp;
-    const isCountExpiredAPITime = moment
-      .duration(moment.unix(expiredTokenAPI ?? 0).diff(timeNow))
-      .asMinutes();
-    if (isCountExpiredAPITime > timeClear) {
-      return `Bearer ${accessToken}`;
-    } else {
-      // await logOut();// function logout user
-      return '';
-    }
-  }
-
-  private static convertToPostData(obj: any, form: any, namespace: any) {
+  },
+  convertToPostData: function (obj: any, form: any, namespace: any) {
     const fd = form || new URLSearchParams();
     let formKey;
 
     for (const property in obj) {
-      if (obj.hasOwnProperty(property)) {
+      if (Object.prototype.hasOwnProperty.call(obj, property)) {
         if (namespace) {
           if (!isNaN(Number(property))) {
             formKey = `${namespace}[${property}]`;
@@ -98,7 +110,10 @@ export default class ApiClient {
 
         if (obj[property] instanceof Date) {
           fd.append(formKey, obj[property].toISOString());
-        } else if (obj[property] instanceof Array<File>) {
+        } else if (
+          Array.isArray(obj[property]) &&
+          obj[property].every((item: any) => item instanceof File)
+        ) {
           for (const i of Object.keys(obj[property])) {
             fd.append(formKey, obj[property][i]);
           }
@@ -115,202 +130,93 @@ export default class ApiClient {
     }
 
     return fd;
-  }
-
-  static async post(
-    url: string,
-    query: QueryObject,
-    params: any,
-    appendUrl?: string
-  ): Promise<AxiosResponse> {
-    const requestUrl = `${url}?${stringify(query)}${appendUrl || ''}`;
-
-    const config: AxiosRequestConfig = {
+  },
+  get: async function (url: string, params: object, query?: QueryObject): Promise<AxiosResponse> {
+    const requestUrl = this.convertQuery(url, query);
+    const response = await api.get(requestUrl, {
+      params,
       headers: await this.getHeaders(),
-    };
-
-    const param = this.convertToPostData(params, undefined, undefined);
-    const response = await axios.post(domainUrl + requestUrl, param, config);
+      data: {},
+    });
     return response;
-  }
-
-  static async getJsonData(
+  },
+  getJsonData: async function (
     url: string,
     params: object,
-    query?: undefined | { [key: string]: string | boolean } | string
+    query?: QueryObject
   ): Promise<AxiosResponse> {
-    let requestUrl = query ? `${url}?${stringify(query)}` : url;
-    if (typeof query === 'string') {
-      requestUrl = `${url}${query}`;
-    }
-    const response = await axios.get(domainUrl + requestUrl, {
+    const requestUrl = this.convertQuery(url, query);
+    const response = await api.get(requestUrl, {
       params,
       headers: await this.getHeaders('application/json'),
       data: {},
     });
     return response;
-  }
-
-  static async postJsonData(
+  },
+  post: async function (
+    url: string,
+    query: QueryObject,
+    params: any,
+    appendUrl?: string
+  ): Promise<AxiosResponse> {
+    let requestUrl = `${url}?${stringify(query)}${appendUrl || ''}`;
+    const config: AxiosRequestConfig = {
+      headers: await this.getHeaders(),
+    };
+    const param = this.convertToPostData(params, undefined, undefined);
+    const response = await api.post(requestUrl, param, config);
+    return response;
+  },
+  postJsonData: async function (
     url: string,
     query: QueryObject,
     params: any,
     extraConfig?: Partial<AxiosRequestConfig>
   ): Promise<AxiosResponse> {
-    const requestUrl = `${url}?${stringify(query)}`;
-
+    const requestUrl = this.convertQuery(url, query);
     const config: AxiosRequestConfig = {
       headers: await this.getHeaders('application/json'),
       ...extraConfig,
     };
-
-    const response = await axios.post(domainUrl + requestUrl, params, config);
+    const response = await api.post(requestUrl, params, config);
     return response;
-  }
-
-  static async postJsonDataNoHeader(
+  },
+  postJsonDataNoHeader: async function (
     url: string,
     query: QueryObject,
     params: any,
     extraConfig?: Partial<AxiosRequestConfig>
   ): Promise<AxiosResponse> {
-    const requestUrl = `${url}?${stringify(query)}`;
-
+    const requestUrl = this.convertQuery(url, query);
     const config: AxiosRequestConfig = {
       headers: {
         'Content-Type': 'application/json',
       },
       ...extraConfig,
     };
-
-    const response = await axios.post(domainUrl + requestUrl, params, config);
+    const response = await api.post(requestUrl, params, config);
     return response;
-  }
-
-  static async putJsonData(url: string, query: QueryObject, params: any): Promise<AxiosResponse> {
-    const requestUrl = `${url}?${stringify(query)}`;
-
-    const config: AxiosRequestConfig = {
-      headers: await this.getHeaders('application/json'),
-    };
-
-    const response = await axios.put(domainUrl + requestUrl, params, config);
-    return response;
-  }
-
-  static async delete(url: string, params: any): Promise<AxiosResponse> {
-    const requestUrl = `${url}?${stringify(params)}`;
-    const config: AxiosRequestConfig = {
-      headers: await this.getHeaders('application/json'),
-    };
-    const response = await axios.delete(domainUrl + requestUrl, config);
-    return response;
-  }
-
-  static async postMutipartData(
+  },
+  putJsonData: async function (
     url: string,
     query: QueryObject,
     params: any
   ): Promise<AxiosResponse> {
-    const requestUrl = `${url}?${stringify(query)}`;
-    const config: AxiosRequestConfig = {
-      headers: await this.getHeaders('multipart/form-data'),
-    };
-    const form = new FormData();
-    const param = this.convertToPostData(params, form, undefined);
-
-    const response = await axios.post(domainUrl + requestUrl, param, config);
-
-    return response;
-  }
-
-  static async downloadExcelPost(
-    url: string,
-    query: undefined | { [key: string]: string | boolean } | string,
-    params: object,
-    fileName = 'excel_table',
-    isFinished = true
-  ): Promise<AxiosResponse> {
-    let requestUrl = query ? `${url}?${stringify(query)}` : url;
-    if (typeof query === 'string') {
-      requestUrl = `${url}${query}`;
-    }
+    const requestUrl = this.convertQuery(url, query);
     const config: AxiosRequestConfig = {
       headers: await this.getHeaders('application/json'),
-      responseType: 'blob',
     };
-
-    const response = await axios.post(domainUrl + requestUrl, params, config);
-    if (isFinished) {
-      const blob = new Blob([response.data], {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      });
-      // saveAs(blob, fileName)
-    }
+    const response = await api.put(requestUrl, params, config);
     return response;
-  }
-
-  static async downloadExcelGet(
-    url: string,
-    params: object,
-    query?: undefined | { [key: string]: string | boolean } | string,
-    fileName?: string
-  ) {
-    let requestUrl = query ? `${url}?${stringify(query)}` : url;
-    if (typeof query === 'string') {
-      requestUrl = `${url}${query}`;
-    }
-    const response = await axios.get(domainUrl + requestUrl, {
-      params,
-      headers: await this.getHeaders('application/xlsx'),
-      responseType: 'blob',
-      data: {},
-    });
-
-    const blob = new Blob([response.data], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    });
-    // saveAs(blob, fileName)
-    return response;
-  }
-
-  static async downloadExcelGetXlsm(
-    url: string,
-    params: object,
-    query?: undefined | { [key: string]: string | boolean | number } | string,
-    fileName?: string
-  ) {
-    let requestUrl = query ? `${url}?${stringify(query)}` : url;
-    if (typeof query === 'string') {
-      requestUrl = `${url}${query}`;
-    }
-    const response = await axios.get(domainUrl + requestUrl, {
-      params,
-      headers: await this.getHeaders('application/vnd.ms-excel'),
-      responseType: 'blob',
-      data: {},
-    });
-
-    const blob = new Blob([response.data], {
-      type: 'application/vnd.ms-excel',
-    });
-    // saveAs(blob, fileName)
-    return response;
-  }
-
-  static async uploadFileExcelPostMutipartData(
-    url: string,
-    query: QueryObject,
-    params: any,
-    option?: any
-  ): Promise<AxiosResponse> {
-    const requestUrl = `${url}?${stringify(query)}`;
+  },
+  delete: async function (url: string, params: any): Promise<AxiosResponse> {
+    let requestUrl = `${url}?${stringify(params)}`;
     const config: AxiosRequestConfig = {
-      headers: await this.getHeaders('multipart/form-data'),
-      onUploadProgress: option?.onUploadProgress,
+      headers: await this.getHeaders('application/json'),
     };
-    const response = await axios.post(domainUrl + requestUrl, params, config);
-
+    const response = await api.delete(requestUrl, config);
     return response;
-  }
-}
+  },
+};
+
+export default ApiClient;
