@@ -12,3 +12,9 @@ export const decodeJwt = (token: string): JwtPayloadType => {
 
   return JSON.parse(jsonPayload)
 }
+
+export const Logout = () => {
+  localStorage.removeItem('accessToken')
+  const hostOrigin = window.location.origin
+  window.location.href = hostOrigin
+}

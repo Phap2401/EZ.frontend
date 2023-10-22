@@ -1,5 +1,11 @@
-export default function RegisterLayout() {
+import { useEffect } from 'react'
+import ApiClient from '~/api/ApiClient'
+const Register = () => {
+    useEffect(() => {
+        const response = ApiClient.postJsonData('/updateAvatar', {},{} )
+    }, [])
     return (
-        <div>RegisterLayout</div>
+        <div>AAAAAA</div>
     )
 }
+export default Register
