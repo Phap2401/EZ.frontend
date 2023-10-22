@@ -48,8 +48,7 @@ const ApiClient = {
   getToken: function () {
     const timeNow = moment();
     //get Token from localStorage
-    // const accessToken = localStorage.getItem('token');
-    const accessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIwMDAxIiwidXNlck5hbWUiOiJBbmggVHXhuqVuIDEiLCJwaG9uZSI6IjA4MjYxNjgxNzgiLCJlbWFpbCI6InR1YW5wNjkwNUBnbWFpbC5jb20iLCJyb2xlIjp7fSwiaWF0IjoxNjk3OTY0Mjg5LCJleHAiOjE2OTc5Njc4ODl9.fgCH7hPapBubH78Wwff7hb2pA5S-d2Jwx5OfrDNXPuY'
+    const accessToken = localStorage.getItem('token');
     if (!accessToken) {
       Logout(); // function to log out the user
       return '';
