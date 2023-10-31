@@ -1,7 +1,7 @@
 import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
 import { stringify } from 'qs';
 import moment from 'moment';
-import { decodeJwt, Logout } from '~/utils/helperFunctions';
+import { decodeJwt, Logout, isObject } from '~/utils/helperFunctions';
 
 // Create an Axios instance with a default base URL
 const api = axios.create({
@@ -65,9 +65,8 @@ const ApiClient = {
   },
   convertQuery: function (url: string, query: QueryObject) {
     if (!query) return url;
-    if (typeof query === 'string') return `${url}?${query}`;
-    if (typeof query === 'object' && Object.keys(query).length === 0)
-      return `${url}?${stringify(query)}`;
+    if (typeof query === 'string' && query.trim()) return `${url}?${query}`;
+    if (isObject(query) && Object.keys(query).length > 0) return `${url}?${stringify(query)}`;
     return url;
   },
   getNoHeader: async function (
