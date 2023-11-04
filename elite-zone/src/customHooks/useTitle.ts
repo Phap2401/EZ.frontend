@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-const useTitle = (title = 'Golden Gate Restaurants') => {
+const useTitle = (title = 'Elite Zone') => {
   useEffect(() => {
     const prevTitle = document.title;
     document.title = title;
