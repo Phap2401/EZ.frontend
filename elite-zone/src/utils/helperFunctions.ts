@@ -1,3 +1,5 @@
+import axios, { AxiosError } from 'axios';
+
 type JwtPayloadType = any;
 export const decodeJwt = (token: string): JwtPayloadType => {
   if (!token) return null;
@@ -21,4 +23,8 @@ export const Logout = () => {
 
 export const isObject = (obj: any) => {
   return obj != null && obj?.constructor?.name === 'Object';
+};
+
+export const isAxiosError = <T>(error: unknown): error is AxiosError<T> => {
+  return axios.isAxiosError(error);
 };

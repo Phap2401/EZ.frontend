@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "analyze": "source-map-explorer 'dist/assets/*.js'",
-    "dev": "vite --port 8000 --host",
+    "dev": "env-cmd -f .env.local vite --port 8000 --host",
     "build:dev": "env-cmd -f .env vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
@@ -25,6 +25,7 @@
     "@mui/x-date-pickers": "^6.9.0",
     "@reduxjs/toolkit": "^1.9.5",
     "@tanstack/react-query": "^4.29.19",
+    "@tanstack/react-query-devtools": "^4.36.1",
     "@types/file-saver": "^2.0.5",
     "@types/qs": "^6.9.7",
     "antd": "^5.7.0",
@@ -89,4 +90,3 @@
     "vite": "^4.3.9"
   }
 }
-

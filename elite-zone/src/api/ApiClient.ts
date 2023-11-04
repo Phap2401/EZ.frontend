@@ -11,20 +11,6 @@ const api = axios.create({
   },
 });
 
-// Add a request interceptor
-api.interceptors.request.use(
-  (config) => {
-    const token = ApiClient.getToken();
-    if (token) {
-      config.headers.authorization = token;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
 // Add a response interceptor to handle 401 errors
 api.interceptors.response.use(
   (response) => {
@@ -50,7 +36,7 @@ const ApiClient = {
     //get Token from localStorage
     const accessToken = localStorage.getItem('token');
     if (!accessToken) {
-      Logout(); // function to log out the user
+      // Logout(); // function to log out the user
       return '';
     }
     //access token get from API login
@@ -59,7 +45,7 @@ const ApiClient = {
     if (!isTokenExpired) {
       return `Bearer ${accessToken}`;
     } else {
-      Logout(); // function to log out the user
+      // Logout(); // function to log out the user
       return '';
     }
   },
